@@ -91,6 +91,7 @@ library
     FSM.RiscV.Alu
     FSM.RiscV.RegFile
     FSM.RiscV.Immediate
+    FSM.RiscV.Wishbone
 
 --executable helloworld
 --  import: common-options
