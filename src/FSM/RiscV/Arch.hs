@@ -31,7 +31,7 @@ data Funct3SInt = F3Sub | F3Sra
     deriving (Eq, Show, Generic, NFDataX)
 {-# ANN module (DataReprAnn 
                 $(liftQ [t|Funct3SInt|])
-                2
+                3
                 [ ConstrRepr 'F3Sub  0x7 0b000 [],
                   ConstrRepr 'F3Sra  0x7 0b101 []
                 ]) #-}
@@ -72,4 +72,16 @@ type RegAddr = Index 32
 type CpuWord = BitVector 32
 type CpuSWord = Signed 32
 type CpuUWord = Unsigned 32
+
+data Instr = Instr {
+    iFunct7 :: Funct7,
+    iRS2 :: RegAddr,
+    iRS1 :: RegAddr,
+    iFunct3 :: Funct3,
+    iRD :: RegAddr,
+    iOpcode :: Opcode
+} deriving (Eq, Show, Generic, NFDataX, BitPack)
+
+decodeInstr :: CpuWord -> Instr
+decodeInstr = bitCoerce
 
