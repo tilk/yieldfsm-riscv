@@ -93,9 +93,19 @@ library
     FSM.RiscV.Immediate
     FSM.RiscV.Wishbone
 
---executable helloworld
---  import: common-options
---  main-is: Shake.hs
---  build-depends: base, shake, clash-ghc, yieldfsm-hd44780
---  hs-source-dirs: shake
+-- Builds the executable 'clash', with simple project in scope
+executable clash
+  main-is: bin/Clash.hs
+  default-language: Haskell2010
+  Build-Depends: base, clash-ghc, yieldfsm-riscv
+  if !os(Windows)
+    ghc-options: -dynamic
+
+-- Builds the executable 'clashi', with simple project in scope
+executable clashi
+  main-is: bin/Clashi.hs
+  default-language: Haskell2010
+  if !os(Windows)
+    ghc-options: -dynamic
+  build-depends: base, clash-ghc, yieldfsm-riscv
 
