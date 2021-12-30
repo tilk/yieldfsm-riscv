@@ -1,18 +1,19 @@
 module FSM.RiscV.Wishbone where
 
 import Clash.Prelude
+import Clash.Annotations.TH
 
 data WishboneIn = WishboneIn {
-    wbDatI :: BitVector 32,
-    wbAck  :: Bool
+    wbDatI :: "DAT_I" ::: BitVector 32,
+    wbAck  :: "ACK_I" ::: Bool
 } deriving (Eq, Show, Generic, NFDataX)
 
 data WishboneOut = WishboneOut {
-    wbAdr  :: BitVector 32,
-    wbDatO :: BitVector 32,
-    wbWE   :: Bool,
-    wbCyc  :: Bool,
-    wbStb  :: Bool
+    wbAdr  :: "ADR_O" ::: BitVector 32,
+    wbDatO :: "DAT_O" ::: BitVector 32,
+    wbWE   :: "WE_O"  ::: Bool,
+    wbCyc  :: "CYC_O" ::: Bool,
+    wbStb  :: "STB_O" ::: Bool
 } deriving (Eq, Show, Generic, NFDataX)
 
 emptyWishboneOut :: WishboneOut

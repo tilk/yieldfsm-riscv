@@ -1,4 +1,8 @@
-module FSM.RiscV where
+module FSM.RiscV(
+    module FSM.RiscV.Arch,
+    module FSM.RiscV.Wishbone,
+    rvcore
+) where
 
 import Clash.Prelude
 import FSM
@@ -78,4 +82,12 @@ forever:
     | OAuipc:
         yield<rf> writeRegFileIn (iRD instr) pcimm
 |]
+
+rvcore :: HiddenClockResetEnable dom
+       => CpuWord
+       -> Signal dom WishboneIn
+       -> Signal dom WishboneOut
+rvcore startPC wbi = wbo
+    where
+    (wbo, rfi, alui) = unbundle $ rvfsm startPC $ bundle (wbi, regFile rfi, sigAlu alui)
 
