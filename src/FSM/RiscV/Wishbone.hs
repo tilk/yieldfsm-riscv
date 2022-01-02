@@ -4,16 +4,16 @@ import Clash.Prelude
 import Clash.Annotations.TH
 
 data WishboneIn = WishboneIn {
-    wbDatI :: "DAT_I" ::: BitVector 32,
-    wbAck  :: "ACK_I" ::: Bool
+    wbDatI :: "dat_i" ::: BitVector 32,
+    wbAck  :: "ack_i" ::: Bool
 } deriving (Eq, Show, Generic, NFDataX)
 
 data WishboneOut = WishboneOut {
-    wbAdr  :: "ADR_O" ::: BitVector 32,
-    wbDatO :: "DAT_O" ::: BitVector 32,
-    wbWE   :: "WE_O"  ::: Bool,
-    wbCyc  :: "CYC_O" ::: Bool,
-    wbStb  :: "STB_O" ::: Bool
+    wbAdr  :: "adr_o" ::: BitVector 32,
+    wbDatO :: "dat_o" ::: BitVector 32,
+    wbWE   :: "we_o"  ::: Bool,
+    wbCyc  :: "cyc_o" ::: Bool,
+    wbStb  :: "stb_o" ::: Bool
 } deriving (Eq, Show, Generic, NFDataX)
 
 emptyWishboneOut :: WishboneOut

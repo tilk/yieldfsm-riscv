@@ -7,11 +7,11 @@ import FSM.RiscV
 startPC :: CpuWord
 startPC = 0x400000
 
-topEntity :: "CLK" ::: Clock System
-          -> "RST" ::: Reset System
-          -> "EN"  ::: Enable System
-          -> "WB"  ::: Signal System WishboneIn
-          -> "WB"  ::: Signal System WishboneOut
+topEntity :: "clk" ::: Clock System
+          -> "rst" ::: Reset System
+          -> "en"  ::: Enable System
+          -> "wb"  ::: Signal System WishboneIn
+          -> "wb"  ::: Signal System WishboneOut
 topEntity = exposeClockResetEnable $ rvcore startPC
 makeTopEntity 'topEntity
 
