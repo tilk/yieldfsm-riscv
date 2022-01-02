@@ -22,12 +22,18 @@ endfunction
 `define TEXT_BEGIN      32'h00400000
 `define TEXT_BITS       16
 `define TEXT_SIZE       2**`TEXT_BITS
-`define TEXT_END        `TEXT_BEGIN + `TEXT_SIZE
+`define TEXT_END        (`TEXT_BEGIN + `TEXT_SIZE)
+`define TEXT_BITS_WB    (`TEXT_BITS - 2)
+`define TEXT_BEGIN_WB   (`TEXT_BEGIN >> 2)
+`define TEXT_END_WB     (`TEXT_END >> 2)
 
 `define DATA_BEGIN      32'h8000_0000
 `define DATA_BITS       17
 `define DATA_SIZE       2**`DATA_BITS
-`define DATA_END        `DATA_BEGIN + `DATA_SIZE
+`define DATA_END        (`DATA_BEGIN + `DATA_SIZE)
+`define DATA_BITS_WB    (`DATA_BITS - 2)
+`define DATA_BEGIN_WB   (`DATA_BEGIN >> 2)
+`define DATA_END_WB     (`DATA_END >> 2)
 
 module wordmem#(BITS)(
     input string hexfile,
@@ -51,17 +57,19 @@ endmodule
 module toplevel(
     input clk, rst, en,
     output we_o, cyc_o, stb_o,
+    output [3:0] sel_o,
     output ack_i,
-    output [31:0] adr_o, dat_o,
+    output [29:0] adr_o,
+    output [31:0] dat_o,
     output [31:0] dat_i
 );
     wire text_wr, data_wr, text_en, data_en;
     wire [31:0] text_out, data_out;
 
     assign text_en = cyc_o && stb_o &&
-                     adr_o >= `TEXT_BEGIN && adr_o < `TEXT_END;
+                     adr_o >= `TEXT_BEGIN_WB && adr_o < `TEXT_END_WB;
     assign data_en = cyc_o && stb_o &&
-                     adr_o >= `DATA_BEGIN && adr_o < `DATA_END;
+                     adr_o >= `DATA_BEGIN_WB && adr_o < `DATA_END_WB;
     assign text_wr = text_en && we_o;
     assign data_wr = data_en && we_o;
     assign ack_i = text_en || data_en;
@@ -70,7 +78,8 @@ module toplevel(
 
     topEntity top(
         .clk(clk), .rst(rst), .en(en),
-        .wb_we_o(we_o), .wb_cyc_o(cyc_o), .wb_stb_o(stb_o),
+        .wb_we_o(we_o), .wb_cyc_o(cyc_o),
+        .wb_stb_o(stb_o), .wb_sel_o(sel_o),
         .wb_adr_o(adr_o), .wb_dat_o(dat_o), 
         .wb_ack_i(ack_i), .wb_dat_i(dat_i)
     );
@@ -78,15 +87,15 @@ module toplevel(
     string textfile = text_mem_file();
     string datafile = data_mem_file();
 
-    wordmem#(`TEXT_BITS-2) textmem(
+    wordmem#(`TEXT_BITS_WB) textmem(
         .hexfile(textfile),
-        .clk(clk), .word_addr(adr_o[`TEXT_BITS-1:2]),
+        .clk(clk), .word_addr(adr_o[`TEXT_BITS_WB-1:0]),
         .in(dat_o), .wr(text_wr), .out(text_out)
     );
 
-    wordmem#(`DATA_BITS-2) datamem(
+    wordmem#(`DATA_BITS_WB) datamem(
         .hexfile(datafile),
-        .clk(clk), .word_addr(adr_o[`DATA_BITS-1:2]),
+        .clk(clk), .word_addr(adr_o[`DATA_BITS_WB-1:0]),
         .in(dat_o), .wr(data_wr), .out(data_out)
     );
 endmodule

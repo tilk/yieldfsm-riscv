@@ -9,6 +9,11 @@ int main(int argc, const char **argv, const char **env)
 {
     Verilated::commandArgs(argc, argv);
 
+    bool verbose = false;
+    const char *str;
+    str = Verilated::commandArgsPlusMatch("verbose");
+    if (str && str[0]) verbose = true;
+
     std::unique_ptr<Vtoplevel> top(new Vtoplevel);
 
     top->rst = 0;
@@ -24,7 +29,14 @@ int main(int argc, const char **argv, const char **env)
         top->clk = time & 1;
         top->eval();
         if (top->cyc_o && top->stb_o) {
-            if (top->we_o && top->adr_o == 0xfffffff0) {
+            if (verbose && top->clk && time > 8) {
+                std::cout << std::hex << std::setfill('0')
+                    << "adr_o=" << std::setw(8) << top->adr_o << " "
+                    << "dat_o=" << std::setw(8) << top->dat_o << " "
+                    << "dat_i=" << std::setw(8) << top->dat_i << " "
+                    << "we_o=" << (top->we_o ? "1" : "0") << std::endl;
+            }
+            if (top->we_o && top->adr_o == 0xfffffff0 >> 2) {
                 if (top->dat_o) {
                     std::cout << "PASS" << std::endl;
                     return 0;

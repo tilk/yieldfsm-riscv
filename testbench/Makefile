@@ -6,6 +6,8 @@ CXXFLAGS=-I. -I ${VERILATOR_INCLUDE} -I ${VERILATOR_INCLUDE}/vltstd
 TOPLEVEL=toplevel.v
 CLASH_OUTPUT_DIR=../verilog/FSM.RiscV.ExampleTop.topEntity
 TOP_ENTITY=${CLASH_OUTPUT_DIR}/topEntity.v
+HS_DIR=../src
+HS_FILES=$(wildcard ${HS_DIR}/FSM/*.hs ${HS_DIR}/FSM/*/*.hs)
 SV_SOURCES=${TOPLEVEL} ${TOP_ENTITY}
 VFLAGS=-Wno-fatal -I. -I${CLASH_OUTPUT_DIR}
 TESTDIR=../riscv-tests
@@ -14,7 +16,7 @@ TESTS=$(notdir $(patsubst %.S,%,$(wildcard $(TESTDIR)/*.S)))
 build: Vtoplevel.h
 	${MAKE} run
 
-${TOP_ENTITY}:
+${TOP_ENTITY}: ${HS_FILES}
 	cd .. && stack run clash -- --verilog FSM.RiscV.ExampleTop
 
 Vtoplevel.h: $(SV_SOURCES)

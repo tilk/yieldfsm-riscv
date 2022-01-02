@@ -22,19 +22,19 @@ output wb = emptyWishboneOut
 output rf = emptyRegFileIn
 output alu = emptyAluIn
 var pc = startPC
-fun wbRead addr:
+fun wbRead (addr, sel):
     do:
-        yield<wb> readWishboneOut addr
+        yield<wb> readWishboneOut addr sel
     until wbAck wb'
     ret wbDatI wb'
-fun wbWrite (addr, val):
+fun wbWrite (addr, val, sel):
     do:
-        yield<wb> writeWishboneOut addr val
+        yield<wb> writeWishboneOut addr val sel
     until wbAck wb'
 forever:
     output<alu> doAluIn aiAdd pc 4
     let pc4 = ali
-    let iword = call wbRead pc
+    let iword = call wbRead (wbWordAddr pc, -1)
     let imm = immediate iword
     let instr = decodeInstr iword
     let aluInstr = decodeAluInstr (iOpcode instr) (iFunct3 instr) (iFunct7 instr)
@@ -47,13 +47,13 @@ forever:
         output<alu> doAluIn aiAdd (rfRS1V rf) imm
         let ares = ali
         yield
-        let val = call wbRead ares
+        let val = call wbRead (wbWordAddr ares, -1)
         yield <rf> writeRegFileIn (iRD instr) val
     | OStore:
         output<alu> doAluIn aiAdd (rfRS1V rf) imm
         let ares = ali
         yield
-        call wbWrite (ares, rfRS2V rf)
+        call wbWrite (wbWordAddr ares, rfRS2V rf, -1)
     | OOp:
         output<alu> doAluIn aluInstr (rfRS1V rf) (rfRS2V rf)
         let ares = ali
