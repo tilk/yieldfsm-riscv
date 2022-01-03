@@ -22,6 +22,9 @@ output wb = emptyWishboneOut
 output rf = emptyRegFileIn
 output alu = emptyAluIn
 var pc = startPC
+fun useAlu (instr, a, b):
+    output<alu> doAluIn instr a b
+    ret ali
 fun wbRead (adr, sel):
     do:
         yield<wb> readWishboneOut adr sel
@@ -37,41 +40,35 @@ fun wbReadF3 (f3, addr):
 fun wbWriteF3 (f3, addr, val):
     ret call wbWrite (mkAdr addr, mkDatO f3 addr val, mkSel f3 addr)
 forever:
-    output<alu> doAluIn aiAdd pc 4
-    let pc4 = ali
+    let pc4 = call useAlu (aiAdd, pc, 4)
     let iword = call wbRead (mkAdr pc, -1)
     let imm = immediate iword
     let instr = decodeInstr iword
     let aluInstr = decodeAluInstr (iOpcode instr) (iFunct3 instr) (iFunct7 instr)
-    output<alu> doAluIn aiAdd pc imm
-    let pcimm = ali
+    let pcimm = call useAlu (aiAdd, pc, imm)
     pc = pc4
     yield<rf> readRegFileIn (iRS1 instr) (iRS2 instr)
     case iOpcode instr
     | OLoad:
-        output<alu> doAluIn aiAdd (rfRS1V rf) imm
-        let ares = ali
+        let ares = call useAlu (aiAdd, rfRS1V rf, imm)
         yield
         let val = call wbReadF3 (bitCoerce $ iFunct3 instr, ares)
         yield <rf> writeRegFileIn (iRD instr) val
     | OStore:
-        output<alu> doAluIn aiAdd (rfRS1V rf) imm
-        let ares = ali
+        let ares = call useAlu (aiAdd, rfRS1V rf, imm)
         yield
         call wbWriteF3 (bitCoerce $ iFunct3 instr, ares, rfRS2V rf)
     | OOp:
-        output<alu> doAluIn aluInstr (rfRS1V rf) (rfRS2V rf)
-        let ares = ali
+        let ares = call useAlu (aluInstr, rfRS1V rf, rfRS2V rf)
         yield
         yield<rf> writeRegFileIn (iRD instr) ares
     | OOpImm:
-        output<alu> doAluIn aluInstr (rfRS1V rf) imm
-        let ares = ali
+        let ares = call useAlu (aluInstr, rfRS1V rf, imm)
         yield
         yield<rf> writeRegFileIn (iRD instr) ares
     | OBranch:
-        output<alu> doAluIn aluInstr (rfRS1V rf) (rfRS2V rf)
-        pc = if ali == 0 then pc else pcimm
+        let c = call useAlu (aluInstr, rfRS1V rf, rfRS2V rf)
+        pc = if c == 0 then pc else pcimm
         yield
     | OLui:
         yield<rf> writeRegFileIn (iRD instr) imm
@@ -81,8 +78,7 @@ forever:
         yield<rf> writeRegFileIn (iRD instr) ppc
     | OJalr:
         let ppc = pc
-        output<alu> doAluIn aiAdd (rfRS1V rf) imm
-        pc = ali
+        pc = call useAlu (aiAdd, rfRS1V rf, imm)
         yield<rf> writeRegFileIn (iRD instr) ppc
     | OAuipc:
         yield<rf> writeRegFileIn (iRD instr) pcimm
