@@ -38,7 +38,7 @@ data Funct3SInt = F3Sub | F3Sra
 deriveBitPack [t|Funct3SInt|]
 
 data MemWidth = MWByte | MWHalf | MWWord
-    deriving (Eq, Show, Generic, NFDataX, BitPack)
+    deriving (Eq, Show, Generic, NFDataX, BitPack, Enum)
 
 data MemSign = MSSigned | MSUnsigned
     deriving (Eq, Show, Generic, NFDataX, BitPack)

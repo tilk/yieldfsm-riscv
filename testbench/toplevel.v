@@ -40,16 +40,22 @@ module wordmem#(BITS)(
     input clk,
     input [BITS-1:0] word_addr,
     input [31:0] in,
+    input [3:0] sel,
     input wr,
     output [31:0] out
 );
     reg [31:0] words[0:2**BITS-1];
+    wire [31:0] mask;
 
     assign out = words[word_addr];
 
     always @(posedge clk)
-        if (wr)
-            words[word_addr] <= in;
+        if (wr) begin
+            if (sel[0]) words[word_addr][0+:8] <= in[0+:8];
+            if (sel[1]) words[word_addr][8+:8] <= in[8+:8];
+            if (sel[2]) words[word_addr][16+:8] <= in[16+:8];
+            if (sel[3]) words[word_addr][24+:8] <= in[24+:8];
+        end
     
     initial $readmemh(hexfile, words);
 endmodule
@@ -90,13 +96,13 @@ module toplevel(
     wordmem#(`TEXT_BITS_WB) textmem(
         .hexfile(textfile),
         .clk(clk), .word_addr(adr_o[`TEXT_BITS_WB-1:0]),
-        .in(dat_o), .wr(text_wr), .out(text_out)
+        .sel(sel_o), .in(dat_o), .wr(text_wr), .out(text_out)
     );
 
     wordmem#(`DATA_BITS_WB) datamem(
         .hexfile(datafile),
         .clk(clk), .word_addr(adr_o[`DATA_BITS_WB-1:0]),
-        .in(dat_o), .wr(data_wr), .out(data_out)
+        .sel(sel_o), .in(dat_o), .wr(data_wr), .out(data_out)
     );
 endmodule
 
