@@ -1,6 +1,6 @@
 module FSM.RiscV.Alu(
     AluInstr(..), AluIn(..), AluOut,
-    emptyAluIn, doAluIn, aiAdd, sigAlu, decodeAluInstr
+    emptyAluIn, doAluIn, aiAdd, alu, sigAlu, decodeAluInstr
 ) where
 
 import Clash.Prelude
