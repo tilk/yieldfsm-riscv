@@ -56,7 +56,7 @@ common common-options
     -fplugin GHC.TypeLits.Normalise
     -fplugin GHC.TypeLits.KnownNat.Solver
 
-    -fconstraint-solver-iterations=8
+    -fconstraint-solver-iterations=12
 
     -- Clash needs access to the source code in compiled modules
     -fexpose-all-unfoldings
@@ -92,6 +92,7 @@ library
     FSM.RiscV.RegFile
     FSM.RiscV.Immediate
     FSM.RiscV.Wishbone
+    FSM.RiscV.Explicit
     FSM.RiscV.ExampleTop
 
 -- Builds the executable 'clash', with simple project in scope
