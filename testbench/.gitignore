@@ -1,4 +1,4 @@
-V*
-*.o
-testbench
+*/V*
+*/*.o
+*/testbench
 */main.cpp
