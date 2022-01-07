@@ -82,7 +82,7 @@ module toplevel(
     assign dat_i = text_en ? text_out :
                    data_en ? data_out : 32'bx;
 
-    topEntity top(
+    `CORETYPE top(
         .clk(clk), .rst(rst), .en(en),
         .wb_we_o(we_o), .wb_cyc_o(cyc_o),
         .wb_stb_o(stb_o), .wb_sel_o(sel_o),

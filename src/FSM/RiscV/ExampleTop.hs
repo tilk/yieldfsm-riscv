@@ -7,11 +7,20 @@ import FSM.RiscV
 startPC :: CpuWord
 startPC = 0x400000
 
-topEntity :: "clk" ::: Clock System
+yieldfsm :: "clk" ::: Clock System
           -> "rst" ::: Reset System
           -> "en"  ::: Enable System
           -> "wb"  ::: Signal System WishboneIn
           -> "wb"  ::: Signal System WishboneOut
-topEntity = exposeClockResetEnable $ rvcore startPC
-makeTopEntity 'topEntity
+yieldfsm = exposeClockResetEnable $ rvcore startPC
+makeTopEntity 'yieldfsm
+
+explicit :: "clk" ::: Clock System
+                  -> "rst" ::: Reset System
+                  -> "en"  ::: Enable System
+                  -> "wb"  ::: Signal System WishboneIn
+                  -> "wb"  ::: Signal System WishboneOut
+explicit = exposeClockResetEnable $ rvcoreExplicit startPC
+makeTopEntity 'explicit
+
 
