@@ -10,6 +10,7 @@ import FSM.RiscV.Alu
 import FSM.RiscV.RegFile
 import FSM.RiscV.Wishbone
 import FSM.RiscV.Immediate
+import Data.Maybe(isJust, fromJust)
 
 data PCSel = PCSelAlu | PCSelAR
     deriving (Eq, Show, Generic, NFDataX, BitPack)
@@ -26,22 +27,21 @@ data AluASel = AluASelRS1 | AluASelPC
 data AluBSel = AluBSelRS2 | AluBSelImm | AluBSel4
     deriving (Eq, Show, Generic, NFDataX, BitPack)
 
+data AluControl = AluControl {
+    acAluI    :: AluInstr,
+    acAluASel :: AluASel,
+    acAluBSel :: AluBSel
+} deriving (Eq, Show, Generic, NFDataX, BitPack)
+
 data ExplicitControl = ExplicitControl {
-    ecPCSel   :: PCSel,
-    ecAddrSel :: AddrSel,
-    ecRDSel   :: RDSel,
-    ecAluASel :: AluASel,
-    ecAluBSel :: AluBSel,
-    ecAluI    :: AluInstr,
-    ecPCWE    :: Bool,
+    ecPCSel   :: Maybe PCSel,
+    ecAddrSel :: Maybe AddrSel,
+    ecRDSel   :: Maybe RDSel,
+    ecAluCtl  :: Maybe AluControl,
     ecIRWE    :: Bool,
     ecDRWE    :: Bool,
     ecRSWE    :: Bool,
-    ecRDWE    :: Bool,
-    ecARWE    :: Bool,
-    ecWbWE    :: Bool,
-    ecWbCyc   :: Bool,
-    ecWbStb   :: Bool
+    ecWbWE    :: Bool
 } deriving (Eq, Show, Generic, NFDataX, BitPack)
 
 data ExplicitStatus = ExplicitStatus {
@@ -54,8 +54,8 @@ data ExplicitStatus = ExplicitStatus {
 
 defaultControl :: ExplicitControl
 defaultControl = 
-    ExplicitControl undefined undefined undefined undefined undefined undefined
-                    False False False False False False False False False
+    ExplicitControl Nothing Nothing Nothing Nothing
+                    False False False False
 
 mux2 :: (Applicative f, BitPack a, BitSize a ~ 1)
      => f a -> f b -> f b -> f b
@@ -89,24 +89,26 @@ explicitDatapath startPC ctl wb =
                  <*> (mkDatO <$> f3m <*> addr <*> (rfRS2V <$> rf))
                  <*> (mux2 (ecIRWE <$> ctl) (pure $ -1) (mkSel <$> f3m <*> addr))
                  <*> (ecWbWE <$> ctl)
-                 <*> (ecWbCyc <$> ctl)
-                 <*> (ecWbStb <$> ctl))
+                 <*> (isJust <$> maddr)
+                 <*> (isJust <$> maddr))
     where
-    pc = regEn startPC (ecPCWE <$> ctl) $ mux2 (ecPCSel <$> ctl) ar aluOut
+    pc = regMaybe startPC $ mux2m (ecPCSel <$> ctl) ar aluOut
     ir = regEn undefined (ecIRWE <$> ctl) (wbDatI <$> wb)
-    ar = regEn undefined (ecARWE <$> ctl) aluOut
+    ar = regEn undefined (isJust . ecAluCtl <$> ctl) aluOut
     dr = register undefined (mkDatI <$> f3m <*> addr <*> (wbDatI <$> wb))
     instr = decodeInstr <$> ir
     f3m = bitCoerce . iFunct3 <$> instr
     imm = immediate <$> ir
-    addr = mux2 (ecAddrSel <$> ctl) pc ar
-    rf = regFile $ RegFileIn <$> (ecRSWE <$> ctl) <*> (ecRDWE <$> ctl)
+    maddr = mux2m (ecAddrSel <$> ctl) pc ar
+    addr = fromJust <$> maddr
+    rf = regFile $ RegFileIn <$> (ecRSWE <$> ctl) <*> (isJust . ecRDSel <$> ctl)
                              <*> (iRS1 <$> instr) <*> (iRS2 <$> instr)
                              <*> (iRD <$> instr)
-                             <*> mux4 (ecRDSel <$> ctl) imm pc dr ar
-    aluOut = alu <$> (ecAluI <$> ctl)
-                 <*> mux2 (ecAluASel <$> ctl) pc (rfRS1V <$> rf)
-                 <*> mux4 (ecAluBSel <$> ctl) (pure undefined) (pure 4) imm (rfRS2V <$> rf)
+                             <*> mux4 (fromJust . ecRDSel <$> ctl) imm pc dr ar
+    aluctl = fromJust . ecAluCtl <$> ctl
+    aluOut = alu <$> (acAluI <$> aluctl)
+                 <*> mux2 (acAluASel <$> aluctl) pc (rfRS1V <$> rf)
+                 <*> mux4 (acAluBSel <$> aluctl) (pure undefined) (pure 4) imm (rfRS2V <$> rf)
 
 data ExplicitState = ESFetch | ESDecode | ESExec | ESExecImm | ESAluWB
                    | ESMemAddr | ESMemRead | ESMemWrite | ESMemWB
@@ -153,88 +155,53 @@ output s st = o s
     where
     alui = decodeAluInstr (esOpcode st) (esFunct3 st) (esFunct7 st)
     o ESFetch = defaultControl {
-        ecAddrSel = AddrSelPC,
-        ecWbCyc = True,
-        ecWbStb = True,
+        ecAddrSel = Just AddrSelPC,
         ecIRWE = esWbAck st,
-        ecAluI = aiAdd,
-        ecAluASel = AluASelPC,
-        ecAluBSel = AluBSel4,
-        ecARWE = True
+        ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSel4
     }
     o ESDecode = defaultControl { 
-        ecPCSel = PCSelAR,
-        ecPCWE = True,
-        ecAluI = aiAdd,
-        ecAluASel = AluASelPC,
-        ecAluBSel = AluBSelImm,
-        ecARWE = True,
+        ecPCSel = Just PCSelAR,
+        ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSelImm,
         ecRSWE = True
     }
     o ESExec = defaultControl {
-        ecAluI = alui,
-        ecAluASel = AluASelRS1,
-        ecAluBSel = AluBSelRS2,
-        ecARWE = True
+        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2
     }
     o ESExecImm = defaultControl {
-        ecAluI = alui,
-        ecAluASel = AluASelRS1,
-        ecAluBSel = AluBSelImm,
-        ecARWE = True
+        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelImm
     }
     o ESLui = defaultControl {
-        ecRDSel = RDSelImm,
-        ecRDWE = True
+        ecRDSel = Just RDSelImm
     }
     o ESAluWB = defaultControl {
-        ecRDSel = RDSelAR,
-        ecRDWE = True
+        ecRDSel = Just RDSelAR
     }
     o ESMemAddr = defaultControl {
-        ecAluI = aiAdd,
-        ecAluASel = AluASelRS1,
-        ecAluBSel = AluBSelImm,
-        ecARWE = True
+        ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm
     }
     o ESMemRead = defaultControl {
-        ecAddrSel = AddrSelAR,
-        ecWbCyc = True,
-        ecWbStb = True,
+        ecAddrSel = Just AddrSelAR,
         ecDRWE = True
     }
     o ESMemWrite = defaultControl {
-        ecAddrSel = AddrSelAR,
-        ecWbCyc = True,
-        ecWbStb = True,
+        ecAddrSel = Just AddrSelAR,
         ecWbWE = True
     }
     o ESMemWB = defaultControl {
-        ecRDSel = RDSelDR,
-        ecRDWE = True
+        ecRDSel = Just RDSelDR
     }
     o ESBranch = defaultControl {
-        ecPCSel = PCSelAR,
-        ecPCWE = esAluLSB st,
-        ecAluI = alui,
-        ecAluASel = AluASelRS1,
-        ecAluBSel = AluBSelRS2,
-        ecARWE = True
+        ecPCSel = if esAluLSB st then Just PCSelAR else Nothing,
+        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2
     }
     o ESJal = defaultControl {
-        ecPCSel = PCSelAR,
-        ecPCWE = True,
-        ecRDSel = RDSelPC,
-        ecRDWE = True
+        ecPCSel = Just PCSelAR,
+        ecRDSel = Just RDSelPC
     }
     o ESJalr = defaultControl {
-        ecPCSel = PCSelAlu,
-        ecPCWE = True,
-        ecRDSel = RDSelPC,
-        ecRDWE = True,
-        ecAluI = aiAdd,
-        ecAluASel = AluASelRS1,
-        ecAluBSel = AluBSelImm
+        ecPCSel = Just PCSelAlu,
+        ecRDSel = Just RDSelPC,
+        ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm
     }
-    
-    
+
+
