@@ -45,11 +45,11 @@ data ExplicitControl = ExplicitControl {
 } deriving (Eq, Show, Generic, NFDataX, BitPack)
 
 data ExplicitStatus = ExplicitStatus {
-    esOpcode  :: Opcode,
-    esFunct3  :: Funct3,
-    esFunct7  :: Funct7,
-    esAluZero :: Bool,
-    esWbAck   :: Bool
+    esOpcode :: Opcode,
+    esFunct3 :: Funct3,
+    esFunct7 :: Funct7,
+    esAluLSB :: Bool,
+    esWbAck  :: Bool
 } deriving (Eq, Show, Generic, NFDataX, BitPack)
 
 defaultControl :: ExplicitControl
@@ -83,11 +83,11 @@ explicitDatapath startPC ctl wb =
     (ExplicitStatus <$> (iOpcode <$> instr)
                     <*> (iFunct3 <$> instr)
                     <*> (iFunct7 <$> instr)
-                    <*> ((== 0) <$> aluOut)
+                    <*> ((bitCoerce . lsb) <$> aluOut)
                     <*> (wbAck <$> wb),
      WishboneOut <$> (mkAdr <$> addr)
                  <*> (mkDatO <$> f3m <*> addr <*> (rfRS2V <$> rf))
-                 <*> (mkSel <$> f3m <*> addr)
+                 <*> (mux2 (ecIRWE <$> ctl) (pure $ -1) (mkSel <$> f3m <*> addr))
                  <*> (ecWbWE <$> ctl)
                  <*> (ecWbCyc <$> ctl)
                  <*> (ecWbStb <$> ctl))
@@ -168,7 +168,8 @@ output s st = o s
         ecAluI = aiAdd,
         ecAluASel = AluASelPC,
         ecAluBSel = AluBSelImm,
-        ecARWE = True
+        ecARWE = True,
+        ecRSWE = True
     }
     o ESExec = defaultControl {
         ecAluI = alui,
@@ -214,7 +215,7 @@ output s st = o s
     }
     o ESBranch = defaultControl {
         ecPCSel = PCSelAR,
-        ecPCWE = esAluZero st,
+        ecPCWE = esAluLSB st,
         ecAluI = alui,
         ecAluASel = AluASelRS1,
         ecAluBSel = AluBSelRS2,
