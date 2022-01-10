@@ -3,6 +3,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: debian:bullseye
     steps:
     - uses: actions/checkout@v2
     - name: Setup Haskell
@@ -34,7 +35,7 @@ jobs:
           ${{ runner.os }}-build-
           ${{ runner.os }}-
     - name: Install Debian dependencies
-      run: sudo apt-get update && sudo apt-get install -y verilator g++ srecord gcc-riscv64-unknown-elf yosys #nextpnr-ice40
+      run: sudo apt-get update && sudo apt-get install -y verilator g++ srecord gcc-riscv64-unknown-elf yosys nextpnr-ice40
     - name: Install Stack dependencies
       run: |
         stack update
