@@ -1,5 +1,5 @@
 
-build:
+synth:
 
 %:
 	make -k -C yieldfsm $*
