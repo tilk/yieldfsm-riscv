@@ -8,7 +8,7 @@ SV_SOURCES=${TOP_ENTITY}
 HS_DIR=../../src
 HS_FILES=$(wildcard ${HS_DIR}/FSM/*.hs ${HS_DIR}/FSM/*/*.hs)
 
-synth: result.asc
+synth: result.json
 
 result.json: ${SV_SOURCES}
 	${YOSYS} -p "synth_ice40 -top ${CORETYPE} -json $@" $<
