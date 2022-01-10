@@ -2,6 +2,7 @@ module FSM.RiscV(
     module FSM.RiscV.Arch,
     module FSM.RiscV.Wishbone,
     rvcore,
+    rvcoreExplicitDP,
     rvcoreExplicit
 ) where
 
@@ -93,6 +94,48 @@ rvcore :: HiddenClockResetEnable dom
 rvcore startPC wbi = wbo
     where
     (wbo, rfi, alui) = unbundle $ rvfsm startPC $ bundle (wbi, regFile rfi, sigAlu alui)
+
+[fsm|rvfsme :: HiddenClockResetEnable dom
+            => Signal dom ExplicitStatus
+            -> Signal dom ExplicitControl
+input st
+forever:
+    yield defaultControl { ecAddrSel = Just AddrSelPC, ecIRWE = esWbAck st, ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSel4 }
+    let alui = decodeAluInstr (esOpcode st) (esFunct3 st) (esFunct7 st)
+    yield defaultControl { ecPCSel = Just PCSelAR, ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSelImm, ecRSWE = True }
+    case esOpcode st
+    | OLoad:
+        yield defaultControl { ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm }
+        yield defaultControl { ecAddrSel = Just AddrSelAR, ecDRWE = True }
+        yield defaultControl { ecRDSel = Just RDSelDR }
+    | OStore:
+        yield defaultControl { ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm }
+        yield defaultControl { ecAddrSel = Just AddrSelAR, ecWbWE = True }
+    | OOp:
+        yield defaultControl { ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2 }
+        yield defaultControl { ecRDSel = Just RDSelAR }
+    | OOpImm:
+        yield defaultControl { ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelImm }
+        yield defaultControl { ecRDSel = Just RDSelAR }
+    | OBranch:
+        yield defaultControl { ecPCSel = if esAluLSB st then Just PCSelAR else Nothing, ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2 }
+    | OLui:
+        yield defaultControl { ecRDSel = Just RDSelImm }
+    | OJal:
+        yield defaultControl { ecPCSel = Just PCSelAR, ecRDSel = Just RDSelPC }
+    | OJalr:
+        yield defaultControl { ecPCSel = Just PCSelAlu, ecRDSel = Just RDSelPC, ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm }
+    | OAuipc:
+        yield defaultControl { ecRDSel = Just RDSelAR }
+|]
+
+rvcoreExplicitDP :: HiddenClockResetEnable dom
+                 => CpuWord
+               -> Signal dom WishboneIn
+               -> Signal dom WishboneOut
+rvcoreExplicitDP startPC wbi = wbo
+    where
+    (st, wbo) = explicitDatapath startPC (rvfsme st) wbi
 
 rvcoreExplicit :: HiddenClockResetEnable dom
                => CpuWord

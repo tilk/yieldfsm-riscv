@@ -1,7 +1,7 @@
 module FSM.RiscV.Explicit(
     PCSel(..), AddrSel(..), RDSel(..), AluASel(..), AluBSel(..),
-    ExplicitControl(..), ExplicitStatus(..), defaultControl,
-    explicitDatapath, explicitControl
+    ExplicitControl(..), ExplicitStatus(..), AluControl(..),
+    defaultControl, explicitDatapath, explicitControl
 ) where
 
 import Clash.Prelude
