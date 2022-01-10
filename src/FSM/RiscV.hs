@@ -100,17 +100,23 @@ rvcore startPC wbi = wbo
             -> Signal dom ExplicitControl
 input st
 forever:
-    yield defaultControl { ecAddrSel = Just AddrSelPC, ecIRWE = esWbAck st, ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSel4 }
+    do:
+        yield defaultControl { ecAddrSel = Just AddrSelPC, ecIRWE = esWbAck st, ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSel4 }
+    until esWbAck st'
     let alui = decodeAluInstr (esOpcode st) (esFunct3 st) (esFunct7 st)
     yield defaultControl { ecPCSel = Just PCSelAR, ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSelImm, ecRSWE = True }
     case esOpcode st
     | OLoad:
         yield defaultControl { ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm }
-        yield defaultControl { ecAddrSel = Just AddrSelAR, ecDRWE = True }
+        do:
+            yield defaultControl { ecAddrSel = Just AddrSelAR, ecDRWE = esWbAck st }
+        until esWbAck st'
         yield defaultControl { ecRDSel = Just RDSelDR }
     | OStore:
         yield defaultControl { ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm }
-        yield defaultControl { ecAddrSel = Just AddrSelAR, ecWbWE = True }
+        do:
+            yield defaultControl { ecAddrSel = Just AddrSelAR, ecWbWE = True }
+        until esWbAck st'
     | OOp:
         yield defaultControl { ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2 }
         yield defaultControl { ecRDSel = Just RDSelAR }

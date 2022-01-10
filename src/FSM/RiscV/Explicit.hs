@@ -181,7 +181,7 @@ output s st = o s
     }
     o ESMemRead = defaultControl {
         ecAddrSel = Just AddrSelAR,
-        ecDRWE = True
+        ecDRWE = esWbAck st
     }
     o ESMemWrite = defaultControl {
         ecAddrSel = Just AddrSelAR,
