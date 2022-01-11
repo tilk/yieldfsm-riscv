@@ -3,7 +3,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: debian:bullseye
     steps:
     - uses: actions/checkout@v2
     - name: Setup Haskell
@@ -34,16 +33,23 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-    - name: Install Debian dependencies
-      run: sudo apt-get update && sudo apt-get install -y verilator g++ srecord gcc-riscv64-unknown-elf yosys nextpnr-ice40
     - name: Install Stack dependencies
       run: |
         stack update
         stack build --only-dependencies
+    - name: Build
+      run: |
+        stack build
+        stack run clash -- -fclash-spec-limit=30 --verilog FSM.RiscV.ExampleTop
     - name: Build RISC-V ISA tests
-      run: cd riscv-tests && make
+      uses: docker://tilk/hardware:latest
+      with:
+        args: /bin/sh -c "cd riscv-tests && make"
     - name: Run tests
-      run: cd testbench && make
+      uses: docker://tilk/hardware:latest
+      with:
+        args: /bin/sh -c "cd testbench && make"
     - name: Test synthesis
-      run: cd synth && make
-
+      uses: docker://tilk/hardware:latest
+      with:
+        args: /bin/sh -c "cd synth  && make"
