@@ -1,0 +1,80 @@
+name: Benchmark
+# Do not run this workflow on pull request since this workflow has permission to modify contents.
+on:
+  push:
+    branches:
+      - master
+      - docker
+
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Haskell
+      uses: haskell/actions/setup@v1
+      with:
+        enable-stack: true
+        stack-setup-ghc: true
+        stack-no-global: true
+    - name: Cache stack
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-stack
+      with:
+        path: ~/.stack
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+    - name: Cache cabal
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-cabal
+      with:
+        path: ~/.cabal
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+    - name: Install Stack dependencies
+      run: |
+        stack update
+        stack build --only-dependencies
+    - name: Build
+      run: |
+        stack build
+        stack run clash -- -fclash-spec-limit=30 --verilog FSM.RiscV.ExampleTop
+    - name: Synthesize and place-and-route
+      uses: docker://tilk/hardware:latest
+      with:
+        args: /bin/sh -c "cd synth && make"
+    - name: Generate benchmark file
+      run: cd synth && ./extract_perf.pl
+    - name: Store benchmark result (Fmax)
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: Fmax (nextpnr, ice40)
+        tool: 'customBiggerIsBetter'
+        output-file-path: './synth/fmax.json'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        benchmark-data-dir-path: "dev/bench/fmax"
+    - name: Store benchmark result (LCs)
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: LCs (nextpnr, ice40)
+        tool: 'customSmallerIsBetter'
+        output-file-path: './synth/lc.json'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        benchmark-data-dir-path: "dev/bench/lc"
+
