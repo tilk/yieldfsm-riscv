@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1642003210132,
+  "lastUpdate": 1642079398830,
   "repoUrl": "https://github.com/tilk/yieldfsm-riscv",
   "entries": {
     "Fmax (nextpnr, ice40)": [
@@ -77,6 +77,45 @@ window.BENCHMARK_DATA = {
           {
             "name": "yieldfsm - fmax",
             "value": 35.65,
+            "unit": "MHz"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "committer": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "distinct": true,
+          "id": "d8e7dc726ed5e257a6d1c5aebe4e761027fe38e9",
+          "message": "Update yieldfsm",
+          "timestamp": "2022-01-13T14:02:34+01:00",
+          "tree_id": "b205507327c96946028a578c2429d144b8131406",
+          "url": "https://github.com/tilk/yieldfsm-riscv/commit/d8e7dc726ed5e257a6d1c5aebe4e761027fe38e9"
+        },
+        "date": 1642079398344,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "yieldfsm - fmax",
+            "value": 34.48,
+            "unit": "MHz"
+          },
+          {
+            "name": "explicitdp - fmax",
+            "value": 43.91,
+            "unit": "MHz"
+          },
+          {
+            "name": "explicit - fmax",
+            "value": 39.59,
             "unit": "MHz"
           }
         ]
