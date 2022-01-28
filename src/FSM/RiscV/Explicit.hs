@@ -157,51 +157,38 @@ output s st = o s
     o ESFetch = defaultControl {
         ecAddrSel = Just AddrSelPC,
         ecIRWE = esWbAck st,
-        ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSel4
-    }
+        ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSel4 }
     o ESDecode = defaultControl { 
         ecPCSel = Just PCSelAR,
         ecAluCtl = Just $ AluControl aiAdd AluASelPC AluBSelImm,
-        ecRSWE = True
-    }
+        ecRSWE = True }
     o ESExec = defaultControl {
-        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2
-    }
+        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2 }
     o ESExecImm = defaultControl {
-        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelImm
-    }
+        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelImm }
     o ESLui = defaultControl {
-        ecRDSel = Just RDSelImm
-    }
+        ecRDSel = Just RDSelImm }
     o ESAluWB = defaultControl {
-        ecRDSel = Just RDSelAR
-    }
+        ecRDSel = Just RDSelAR }
     o ESMemAddr = defaultControl {
-        ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm
-    }
+        ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm }
     o ESMemRead = defaultControl {
         ecAddrSel = Just AddrSelAR,
-        ecDRWE = esWbAck st
-    }
+        ecDRWE = esWbAck st }
     o ESMemWrite = defaultControl {
         ecAddrSel = Just AddrSelAR,
-        ecWbWE = True
-    }
+        ecWbWE = True }
     o ESMemWB = defaultControl {
-        ecRDSel = Just RDSelDR
-    }
+        ecRDSel = Just RDSelDR }
     o ESBranch = defaultControl {
         ecPCSel = if esAluLSB st then Just PCSelAR else Nothing,
-        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2
-    }
+        ecAluCtl = Just $ AluControl alui AluASelRS1 AluBSelRS2 }
     o ESJal = defaultControl {
         ecPCSel = Just PCSelAR,
-        ecRDSel = Just RDSelPC
-    }
+        ecRDSel = Just RDSelPC }
     o ESJalr = defaultControl {
         ecPCSel = Just PCSelAlu,
         ecRDSel = Just RDSelPC,
-        ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm
-    }
+        ecAluCtl = Just $ AluControl aiAdd AluASelRS1 AluBSelImm }
 
 
