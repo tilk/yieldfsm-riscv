@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1642932712275,
+  "lastUpdate": 1643389057755,
   "repoUrl": "https://github.com/tilk/yieldfsm-riscv",
   "entries": {
     "LCs (nextpnr, ice40)": [
@@ -194,6 +194,45 @@ window.BENCHMARK_DATA = {
           {
             "name": "explicit - lc",
             "value": 3726,
+            "unit": "LCs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "committer": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "distinct": true,
+          "id": "bdb89ed23bcbca7c77837528dbda6316e33ecb2c",
+          "message": "Unify style of control signals",
+          "timestamp": "2022-01-28T17:46:00+01:00",
+          "tree_id": "b0464fa63c4d7a9b6a3828672c813e6e085b2c23",
+          "url": "https://github.com/tilk/yieldfsm-riscv/commit/bdb89ed23bcbca7c77837528dbda6316e33ecb2c"
+        },
+        "date": 1643389057155,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "yieldfsm - lc",
+            "value": 4866,
+            "unit": "LCs"
+          },
+          {
+            "name": "explicit - lc",
+            "value": 3726,
+            "unit": "LCs"
+          },
+          {
+            "name": "explicitdp - lc",
+            "value": 3790,
             "unit": "LCs"
           }
         ]
