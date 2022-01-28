@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1642932710646,
+  "lastUpdate": 1643389055627,
   "repoUrl": "https://github.com/tilk/yieldfsm-riscv",
   "entries": {
     "Fmax (nextpnr, ice40)": [
@@ -194,6 +194,45 @@ window.BENCHMARK_DATA = {
           {
             "name": "explicit - fmax",
             "value": 39.59,
+            "unit": "MHz"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "committer": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "distinct": true,
+          "id": "bdb89ed23bcbca7c77837528dbda6316e33ecb2c",
+          "message": "Unify style of control signals",
+          "timestamp": "2022-01-28T17:46:00+01:00",
+          "tree_id": "b0464fa63c4d7a9b6a3828672c813e6e085b2c23",
+          "url": "https://github.com/tilk/yieldfsm-riscv/commit/bdb89ed23bcbca7c77837528dbda6316e33ecb2c"
+        },
+        "date": 1643389054730,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "yieldfsm - fmax",
+            "value": 32.74,
+            "unit": "MHz"
+          },
+          {
+            "name": "explicit - fmax",
+            "value": 39.59,
+            "unit": "MHz"
+          },
+          {
+            "name": "explicitdp - fmax",
+            "value": 43.91,
             "unit": "MHz"
           }
         ]
