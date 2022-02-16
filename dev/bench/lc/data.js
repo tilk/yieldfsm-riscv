@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1643389057755,
+  "lastUpdate": 1645009898548,
   "repoUrl": "https://github.com/tilk/yieldfsm-riscv",
   "entries": {
     "LCs (nextpnr, ice40)": [
@@ -233,6 +233,45 @@ window.BENCHMARK_DATA = {
           {
             "name": "explicitdp - lc",
             "value": 3790,
+            "unit": "LCs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "committer": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "distinct": true,
+          "id": "062879fbd31ee440fbf2f299e1c0d3eb48ac13b0",
+          "message": "Separate explicit control and data.",
+          "timestamp": "2022-02-16T11:42:23+01:00",
+          "tree_id": "0de5b85ea93865fbd25824373b69a208ed3546e3",
+          "url": "https://github.com/tilk/yieldfsm-riscv/commit/062879fbd31ee440fbf2f299e1c0d3eb48ac13b0"
+        },
+        "date": 1645009898265,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "yieldfsm - lc",
+            "value": 4866,
+            "unit": "LCs"
+          },
+          {
+            "name": "explicitdp - lc",
+            "value": 3790,
+            "unit": "LCs"
+          },
+          {
+            "name": "explicit - lc",
+            "value": 3726,
             "unit": "LCs"
           }
         ]
