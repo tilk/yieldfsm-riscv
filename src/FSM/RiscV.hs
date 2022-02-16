@@ -13,7 +13,8 @@ import FSM.RiscV.Alu
 import FSM.RiscV.RegFile
 import FSM.RiscV.Immediate
 import FSM.RiscV.Wishbone
-import FSM.RiscV.Explicit
+import FSM.RiscV.ExplicitControl
+import FSM.RiscV.ExplicitData
 
 [fsm|rvfsm :: HiddenClockResetEnable dom
            => CpuWord

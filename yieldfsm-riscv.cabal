@@ -92,7 +92,8 @@ library
     FSM.RiscV.RegFile
     FSM.RiscV.Immediate
     FSM.RiscV.Wishbone
-    FSM.RiscV.Explicit
+    FSM.RiscV.ExplicitControl
+    FSM.RiscV.ExplicitData
     FSM.RiscV.ExampleTop
 
 -- Builds the executable 'clash', with simple project in scope
