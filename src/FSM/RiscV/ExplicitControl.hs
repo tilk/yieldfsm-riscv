@@ -5,11 +5,7 @@ module FSM.RiscV.ExplicitControl(
 import Clash.Prelude
 import FSM.RiscV.Arch
 import FSM.RiscV.Alu
-import FSM.RiscV.RegFile
-import FSM.RiscV.Wishbone
-import FSM.RiscV.Immediate
 import FSM.RiscV.ExplicitData
-import Data.Maybe(isJust, fromJust)
 
 data ExplicitState = ESFetch | ESDecode | ESExec | ESExecImm | ESAluWB
                    | ESMemAddr | ESMemRead | ESMemWrite | ESMemWB

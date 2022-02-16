@@ -94,6 +94,8 @@ library
     FSM.RiscV.Wishbone
     FSM.RiscV.ExplicitControl
     FSM.RiscV.ExplicitData
+    FSM.RiscV.YieldControl
+    FSM.RiscV.YieldCtlData
     FSM.RiscV.ExampleTop
 
 -- Builds the executable 'clash', with simple project in scope
