@@ -2,6 +2,7 @@ module FSM.RiscV(
     module FSM.RiscV.Arch,
     module FSM.RiscV.Wishbone,
     rvcore,
+    rvcoreManual,
     rvcoreExplicitDP,
     rvcoreExplicit
 ) where
@@ -15,6 +16,7 @@ import FSM.RiscV.ExplicitControl
 import FSM.RiscV.ExplicitData
 import FSM.RiscV.YieldControl
 import FSM.RiscV.YieldCtlData
+import FSM.RiscV.YieldCtlDataManual
 
 rvcore :: HiddenClockResetEnable dom
        => CpuWord
@@ -23,6 +25,14 @@ rvcore :: HiddenClockResetEnable dom
 rvcore startPC wbi = wbo
     where
     (wbo, rfi, alui) = unbundle $ rvfsm startPC $ bundle (wbi, regFile rfi, sigAlu alui)
+
+rvcoreManual :: HiddenClockResetEnable dom
+             => CpuWord
+             -> Signal dom WishboneIn
+             -> Signal dom WishboneOut
+rvcoreManual startPC wbi = wbo
+    where
+    (wbo, rfi, alui) = unbundle $ rvfsmManual startPC $ bundle (wbi, regFile rfi, sigAlu alui)
 
 rvcoreExplicitDP :: HiddenClockResetEnable dom
                  => CpuWord
