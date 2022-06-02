@@ -23,6 +23,14 @@ yieldfsm_manual :: "clk" ::: Clock System
 yieldfsm_manual = exposeClockResetEnable $ rvcoreManual startPC
 makeTopEntity 'yieldfsm_manual
 
+yieldfsm_manualopt :: "clk" ::: Clock System
+                   -> "rst" ::: Reset System
+                   -> "en"  ::: Enable System
+                   -> "wb"  ::: Signal System WishboneIn
+                   -> "wb"  ::: Signal System WishboneOut
+yieldfsm_manualopt = exposeClockResetEnable $ rvcoreManualOpt startPC
+makeTopEntity 'yieldfsm_manualopt
+
 explicitdp :: "clk" ::: Clock System
            -> "rst" ::: Reset System
            -> "en"  ::: Enable System
