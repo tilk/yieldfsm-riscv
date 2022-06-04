@@ -13,10 +13,16 @@ Three implementations are provided, in the file `ExampleTop.hs`:
 * `explicitdp` -- explicit data path, controller written using YieldFSM (`YieldControl.hs` and `ExplicitData.hs`);
 * `yieldfsm` -- combined control and data path in single YieldFSM source (`YieldCtlData.hs`).
 
-## Testing 
+The source is in the `src` directory. Other directories contain:
 
-The core is tested using [official unit tests](https://github.com/riscv/riscv-tests).
-The tests are in the `riscv-tests` directory, building them requires installing the RISC-V toolchain (in Debian: gcc-riscv64-unknown-elf).
+* `riscv-tests` -- [unit tests for the RISC-V architecture](https://github.com/riscv/riscv-tests). Building requires installing the RISC-V toolchain (in Debian: `gcc-riscv64-unknown-elf`), also `srecord` is needed to prepare binary images. Building the unit tests is required before running the testbench.
+* `testbench` -- the testbench for RISC-V cores. It contains three subdirectories for each of the implementations. Building and running the testbench requires installing `verilator`.
+* `synth` -- synthesis benchmarks. Like `testbench`, contains subdirectories for each of the implementations. Running the synthesis benchmarks requires `yosys` and `nextpnr-ice40`.
 
-The test runner is in the `testbench` directory. To run tests, Verilator is required (in Debian: verilator).
+## Building and testing 
 
+Building the cores requires `stack` (use `stack build`).
+
+To test the cores, one first has to build (using `make`) the tests (`riscv-tests`), and then compile and run the testbench (`testbench`).
+
+To run synthesis benchmarks, run `make` in the `synth` subdirectory, then run `extract_perf.pl` (requires Perl) to extract performance numbers (number of used LCs and maximum frequency Fmax) to JSON files `lc.json` and `fmax.json`.
