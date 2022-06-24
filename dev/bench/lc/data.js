@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1654334594050,
+  "lastUpdate": 1656063597929,
   "repoUrl": "https://github.com/tilk/yieldfsm-riscv",
   "entries": {
     "LCs (nextpnr, ice40)": [
@@ -389,6 +389,45 @@ window.BENCHMARK_DATA = {
           {
             "name": "yieldfsm - lc",
             "value": 4749,
+            "unit": "LCs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "committer": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "distinct": true,
+          "id": "2d6dc8c494ffbb38434ded91c66ea0951b63ccac",
+          "message": "Update yieldfsm",
+          "timestamp": "2022-06-24T11:08:01+02:00",
+          "tree_id": "05074ef1efad7ea072d84d4ac7ccfe65ecefd279",
+          "url": "https://github.com/tilk/yieldfsm-riscv/commit/2d6dc8c494ffbb38434ded91c66ea0951b63ccac"
+        },
+        "date": 1656063597626,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "explicitdp - lc",
+            "value": 3699,
+            "unit": "LCs"
+          },
+          {
+            "name": "yieldfsm - lc",
+            "value": 4749,
+            "unit": "LCs"
+          },
+          {
+            "name": "explicit - lc",
+            "value": 3726,
             "unit": "LCs"
           }
         ]
