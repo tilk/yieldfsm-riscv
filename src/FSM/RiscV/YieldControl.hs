@@ -1,3 +1,10 @@
+{-|
+Copyright  :  (C) 2022 Marek Materzok
+License    :  BSD2 (see the file LICENSE)
+Maintainer :  Marek Materzok <tilk@tilk.eu>
+
+RISC-V core controller written in YieldFSM.
+-}
 module FSM.RiscV.YieldControl(
     rvfsme
 ) where

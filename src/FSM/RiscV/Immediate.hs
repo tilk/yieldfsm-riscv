@@ -1,8 +1,16 @@
+{-|
+Copyright  :  (C) 2022 Marek Materzok
+License    :  BSD2 (see the file LICENSE)
+Maintainer :  Marek Materzok <tilk@tilk.eu>
+
+Immediate generator.
+-}
 module FSM.RiscV.Immediate where
 
 import Clash.Prelude
 import FSM.RiscV.Arch
 
+-- | Immediate generator. Decodes constants from opcodes.
 immediate :: CpuWord -> CpuWord
 immediate a = case opcode of
         OOp     -> errorX "no immediate for OP"

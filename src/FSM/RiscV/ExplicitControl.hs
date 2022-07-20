@@ -1,3 +1,10 @@
+{-|
+Copyright  :  (C) 2022 Marek Materzok
+License    :  BSD2 (see the file LICENSE)
+Maintainer :  Marek Materzok <tilk@tilk.eu>
+
+Explicit RISC-V control path.
+-}
 module FSM.RiscV.ExplicitControl(
     explicitControl
 ) where
@@ -7,16 +14,19 @@ import FSM.RiscV.Arch
 import FSM.RiscV.Alu
 import FSM.RiscV.ExplicitData
 
+-- | Control path automaton states.
 data ExplicitState = ESFetch | ESDecode | ESExec | ESExecImm | ESAluWB
                    | ESMemAddr | ESMemRead | ESMemWrite | ESMemWB
                    | ESBranch | ESJal | ESJalr | ESLui
     deriving (Eq, Show, Generic, NFDataX, BitPack)
 
+-- | Control path automaton.
 explicitControl :: HiddenClockResetEnable dom
                 => Signal dom ExplicitStatus
                 -> Signal dom ExplicitControl
 explicitControl = mealy (\s i -> (transition s i, output s i)) ESFetch
 
+-- | Control path automaton transition function.
 transition :: ExplicitState -> ExplicitStatus -> ExplicitState
 transition ESFetch st | esWbAck st = ESDecode
                       | otherwise  = ESFetch
@@ -47,6 +57,7 @@ transition ESAluWB   _  = ESFetch
 transition ESMemWB   _  = ESFetch
 transition ESBranch  _  = ESFetch
 
+-- | Control path automaton output function.
 output :: ExplicitState -> ExplicitStatus -> ExplicitControl
 output s st = o s
     where

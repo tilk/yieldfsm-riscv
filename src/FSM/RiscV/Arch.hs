@@ -1,9 +1,17 @@
+{-|
+Copyright  :  (C) 2022 Marek Materzok
+License    :  BSD2 (see the file LICENSE)
+Maintainer :  Marek Materzok <tilk@tilk.eu>
+
+RISC-V architecture specification.
+-}
 module FSM.RiscV.Arch where
 
 import Clash.Prelude
 import Clash.Annotations.BitRepresentation
 import Clash.Annotations.BitRepresentation.Deriving
 
+-- | RISC-V opcode.
 data Opcode = OLoad   | OStore | OOp  | OOpImm
             | OBranch | OLui   | OJal | OJalr
             | OAuipc
@@ -23,11 +31,20 @@ data Opcode = OLoad   | OStore | OOp  | OOpImm
                 ]) #-}
 deriveBitPack [t|Opcode|]
 
-data Funct3Int = F3Add | F3Sll | F3Slt | F3Sltu
-               | F3Xor | F3Srl | F3Or  | F3And
+-- | RISC-V funct3 values for OP and OP-IMM instructions.
+data Funct3Int = F3Add  -- ^ Addition.
+               | F3Sll  -- ^ Shift left logical.
+               | F3Slt  -- ^ Set if less than.
+               | F3Sltu -- ^ Set if less than unsigned.
+               | F3Xor  -- ^ XOR.
+               | F3Srl  -- ^ Shift right logical.
+               | F3Or   -- ^ OR.
+               | F3And  -- ^ AND.
     deriving (Eq, Show, Generic, NFDataX, BitPack)
 
-data Funct3SInt = F3Sub | F3Sra
+-- | RISC-V alternate funct3 values for OP instructions.
+data Funct3SInt = F3Sub -- ^ Subtraction.
+                | F3Sra -- ^ Shift right arithmetic.
     deriving (Eq, Show, Generic, NFDataX)
 {-# ANN module (DataReprAnn 
                 $(liftQ [t|Funct3SInt|])
@@ -37,16 +54,25 @@ data Funct3SInt = F3Sub | F3Sra
                 ]) #-}
 deriveBitPack [t|Funct3SInt|]
 
-data MemWidth = MWByte | MWHalf | MWWord
+-- | Width of the memory access.
+data MemWidth = MWByte -- ^ Single byte.
+              | MWHalf -- ^ Half word (two bytes).
+              | MWWord -- ^ Word (four bytes).
     deriving (Eq, Show, Generic, NFDataX, BitPack, Enum)
 
-data MemSign = MSSigned | MSUnsigned
+-- | Signedness of the memory access.
+data MemSign = MSSigned   -- ^ Signed value (sign-extend on load).
+             | MSUnsigned -- ^ Unsigned value.
     deriving (Eq, Show, Generic, NFDataX, BitPack)
 
+-- | RISC-V funct3 values for LOAD and STORE instructions.
 data Funct3Mem = Funct3Mem MemSign MemWidth
     deriving (Eq, Show, Generic, NFDataX, BitPack)
 
-data BranchType = BTEq | BTLt | BTLtu
+-- | Branch comparison type.
+data BranchType = BTEq  -- ^ Equality comparison.
+                | BTLt  -- ^ Less-than comparison.
+                | BTLtu -- ^ Unsigned less-than comparison.
     deriving (Eq, Show, Generic, NFDataX)
 {-# ANN module (DataReprAnn 
                 $(liftQ [t|BranchType|])
@@ -57,22 +83,34 @@ data BranchType = BTEq | BTLt | BTLtu
                 ]) #-}
 deriveBitPack [t|BranchType|]
 
-data BranchNeg = BNPos | BNNeg
+-- | Branch comparison negation.
+data BranchNeg = BNPos -- ^ Branch if comparison true.
+               | BNNeg -- ^ Branch if comparison false.
     deriving (Eq, Show, Generic, NFDataX, BitPack)
 
+-- | RISC-V funct3 values for BRANCH instructions.
 data Funct3Branch = Funct3Branch BranchType BranchNeg
     deriving (Eq, Show, Generic, NFDataX, BitPack)
 
+-- | Funct3 field.
 type Funct3 = BitVector 3
 
+-- | Funct7 field.
 type Funct7 = BitVector 7
 
+-- | Register number.
 type RegAddr = Index 32
 
+-- | A CPU word.
 type CpuWord = BitVector 32
+
+-- | Signed CPU word.
 type CpuSWord = Signed 32
+
+-- | Unsigned CPU word.
 type CpuUWord = Unsigned 32
 
+-- | RISC-V instruction word split into bit fields.
 data Instr = Instr {
     iFunct7 :: Funct7,
     iRS2 :: RegAddr,
@@ -82,6 +120,7 @@ data Instr = Instr {
     iOpcode :: Opcode
 } deriving (Eq, Show, Generic, NFDataX, BitPack)
 
+-- | Decode a RISC-V instruction.
 decodeInstr :: CpuWord -> Instr
 decodeInstr = bitCoerce
 
