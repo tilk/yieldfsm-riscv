@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1656063597929,
+  "lastUpdate": 1658316745921,
   "repoUrl": "https://github.com/tilk/yieldfsm-riscv",
   "entries": {
     "LCs (nextpnr, ice40)": [
@@ -428,6 +428,45 @@ window.BENCHMARK_DATA = {
           {
             "name": "explicit - lc",
             "value": 3726,
+            "unit": "LCs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "committer": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "distinct": true,
+          "id": "03a03c2609e6d2f2c7d942f20d60309ae68349a8",
+          "message": "Haddocks added.",
+          "timestamp": "2022-07-20T13:04:21+02:00",
+          "tree_id": "19c78af5a258f04fc5568b3841c5513c15c13217",
+          "url": "https://github.com/tilk/yieldfsm-riscv/commit/03a03c2609e6d2f2c7d942f20d60309ae68349a8"
+        },
+        "date": 1658316745597,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "explicit - lc",
+            "value": 3726,
+            "unit": "LCs"
+          },
+          {
+            "name": "explicitdp - lc",
+            "value": 3699,
+            "unit": "LCs"
+          },
+          {
+            "name": "yieldfsm - lc",
+            "value": 4749,
             "unit": "LCs"
           }
         ]
