@@ -1,6 +1,6 @@
 cabal-version:       2.4
 name:                yieldfsm-riscv
-version:             0.1
+version:             0.2.0
 license:             BSD-2-Clause
 author:              Marek Materzok <tilk@tilk.eu>
 maintainer:          Marek Materzok <tilk@tilk.eu>
@@ -67,11 +67,11 @@ common common-options
     -fno-worker-wrapper
 
   build-depends:
-    base >= 4.14 && < 4.15,
-    yieldfsm >= 0.1 && < 0.2,
+    base >= 4.15 && < 4.16,
+    yieldfsm >= 0.2 && < 0.3,
     Cabal,
     -- clash-prelude will set suitable version bounds for the plugins
-    clash-prelude >= 1.2.5 && < 1.6,
+    clash-prelude >= 1.6.4 && < 1.7,
     ghc-typelits-natnormalise,
     ghc-typelits-extra,
     ghc-typelits-knownnat
