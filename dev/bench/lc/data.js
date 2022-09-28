@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1658316745921,
+  "lastUpdate": 1664365605234,
   "repoUrl": "https://github.com/tilk/yieldfsm-riscv",
   "entries": {
     "LCs (nextpnr, ice40)": [
@@ -467,6 +467,45 @@ window.BENCHMARK_DATA = {
           {
             "name": "yieldfsm - lc",
             "value": 4749,
+            "unit": "LCs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "committer": {
+            "email": "tilk@tilk.eu",
+            "name": "Marek Materzok",
+            "username": "tilk"
+          },
+          "distinct": true,
+          "id": "395425e5e18ae6e8216d3e7728b630bdbf58c947",
+          "message": "Update GHC and Clash",
+          "timestamp": "2022-09-28T13:21:50+02:00",
+          "tree_id": "b7f0ee68690ead8d08546083bd4c6c8ff878cdd9",
+          "url": "https://github.com/tilk/yieldfsm-riscv/commit/395425e5e18ae6e8216d3e7728b630bdbf58c947"
+        },
+        "date": 1664365604706,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "explicitdp - lc",
+            "value": 4698,
+            "unit": "LCs"
+          },
+          {
+            "name": "yieldfsm - lc",
+            "value": 5829,
+            "unit": "LCs"
+          },
+          {
+            "name": "explicit - lc",
+            "value": 4770,
             "unit": "LCs"
           }
         ]
